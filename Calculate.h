@@ -1,37 +1,47 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<math.h>
-//double atof(const char* s);//²»ÓÃÖØ¸´¶¨Òå£¬´æÔÚÓÚSTDLIB.H
+
+/*å‡½æ•°å£°æ˜åŒºåŸŸ*/
+//double atof(const char* s);  //VSä¸­ä¸ç”¨é‡å¤å®šä¹‰ï¼Œå­˜åœ¨äºSTDLIB.H
+
+/*#å­—ç¬¦ä¸²è§£æ*/
 int Initialize();
-int Arithtest(int Phy_index, int Log_index); /*²ÎÊı1:ÎïÀíÏÂ±ê ²ÎÊı2:Âß¼­ÏÂ±ê*/
-int ConvertValue(int Phy_index, int Log_index); /*²ÎÊı1:ÎïÀíÏÂ±ê ²ÎÊı2:Âß¼­ÏÂ±ê*/
-void clear(int n);
-int JudgeSymbol(int data, int mode);	/*1:ÅĞ¶¨×Ö·û 2:ÅĞ¶¨ÔËËã·û 3:ÅĞ¶¨ÊıÖµ*/
+int Arithtest(int Phy_index, int Log_index); /*å‚æ•°1:ç‰©ç†ä¸‹æ ‡ å‚æ•°2:é€»è¾‘ä¸‹æ ‡*/
+int ConvertValue(int Phy_index, int Log_index); /*å‚æ•°1:ç‰©ç†ä¸‹æ ‡ å‚æ•°2:é€»è¾‘ä¸‹æ ‡*/
+void clear(int n); /*æ¸…ç©ºStackæ•°ç»„*/
+int JudgeSymbol(int data, int mode);	/*mode=1:åˆ¤å®šç®—å¼å­—ç¬¦;mode=2:åˆ¤å®šè¿ç®—ç¬¦,mode=3:åˆ¤å®šæ•°å€¼ï¼›åŒ¹é…æˆåŠŸè¿”å›å¯¹åº”ä¸‹æ ‡ï¼Œå¦åˆ™è¿”å›0*/
 
+/*#è®¡ç®—*/
 int Calculate();
-int JudgePrio(int index, int* level, int* ins);			/*ÅĞ¶ÏÓÅÏÈ¼¶*/
-int JJud(int index, int* level, int* ins, int n, int bound);	/*·´¸´ÍËÕ»*/
-void pop(int sta, int ins, int n);	/*³öÕ»*/
-void Cal(int index, int n);	/*ÔËËã*/
-void ShowCal();			/*Êä³ö½á¹û*/
-void ShowList(int mode);/*1£ºÊä³öËãÊ½ 2£ºÊä³öÁÙÊ±×ª»»µÄ×Ö·û´®*/
+int JudgePrio(int index, int* level, int* ins);			/*åˆ¤æ–­ä¼˜å…ˆçº§*/
+int JJud(int index, int* level, int* ins, int n, int bound);	/*åå¤é€€æ ˆ*/
+void pop(int sta, int ins, int n);	/*å‡ºæ ˆ*/
+void Cal(int index, int n);	/*è¿ç®—*/
+void ShowCal();			/*è¾“å‡ºç»“æœ*/
+void ShowList(int mode);/*1ï¼šè¾“å‡ºç®—å¼ 2ï¼šè¾“å‡ºä¸´æ—¶è½¬æ¢çš„å­—ç¬¦ä¸²*/
 
+/*#è®¡ç®—å‡½æ•°*/
 double add(double a, double b);
 double sub(double a, double b);
 double mul(double a, double b);
 double _div(double a, double b);
-//double pow(double a, double b); //²»ÓÃÖØ¸´¶¨Òå£¬´æÔÚÓÚMATH.H
+//double pow(double a, double b); //ä¸ç”¨é‡å¤å®šä¹‰ï¼Œå­˜åœ¨äºMATH.H
 
-double(*funs[])(double, double) = { add,sub,mul,_div,pow };
+
+/*å‡½æ•°è°ƒç”¨*/
+double (*funs[])(double, double) = { add,sub,mul,_div,pow };
 double (**f)(double, double) = funs;
 
-char Symbol[50] = { 0 };
-double Value[50] = { 0 };	/*ÀàĞÍ´íÎó*/
-char Stack[50] = { 0 };
-char Arith[50] = { 0 };	/*ÁÙÊ±´æ´¢*/
 
-char str_symbol[9] = { "0+-*/^()" }; 
-char str_value[12] = { "01234567890" };
+/*å˜é‡*/
+char Symbol[50] = { 0 };	
+double Value[50] = { 0 };	/*ç±»å‹é”™è¯¯*/
+char Stack[50] = { 0 };
+char Arith[50] = { 0 };	/*ä¸´æ—¶å­˜å‚¨*/
+
+char str_symbol[9] = { "0+-*/^()" };     	/*è¿ç®—ç¬¦ä¼˜å…ˆçº§è®¾ç½®ï¼Œä¸‹æ ‡è¶Šå¤§ï¼Œä¼˜å…ˆçº§è¶Šé«˜*/
+char str_value[12] = { "01234567890" }; 
 
 
 
@@ -48,7 +58,7 @@ int Initialize() {
 	}
 	for (; i < 50; i++) {
 		if (Arith[i] == '\0') break;
-		if (JudgeSymbol(Arith[i], 1)) {			/*ÅĞ¶¨×Ö·û*/
+		if (JudgeSymbol(Arith[i], 1)) {			/*åˆ¤å®šå­—ç¬¦*/
 			if (!Arithtest(i, p)) { printf("Arithtest error"); return 0; }
 			if (Arith[i] == '-' && Symbol[p - 1] == '(') {
 				Symbol[p] = 1;
@@ -59,43 +69,43 @@ int Initialize() {
 			p++;
 			continue;
 		}
-		if (!JudgeSymbol(Arith[i], 3)) { printf("not Value1 error\n"); return 0; }	/*ÅĞ¶¨ÊıÖµ*/
+		if (!JudgeSymbol(Arith[i], 3)) { printf("not Value1 error\n"); return 0; }	/*åˆ¤å®šæ•°å€¼*/
 
 		i = ConvertValue(i, p);
 		if (i < 0) return 0;
-		Symbol[p] = 1;	/*±êÖ¾Îª1*/
+		Symbol[p] = 1;	/*æ ‡å¿—ä¸º1*/
 
 		p++;
 	}
 
-	/*Ä©Î»±ØĞëÎªÊıÖµ*/
+	/*æœ«ä½å¿…é¡»ä¸ºæ•°å€¼*/
 	if (Symbol[p - 1] != 1 && Symbol[p - 1] != ')') { printf("Value error\n"); return 0; }
 	return p;
 }
-int Arithtest(int Phy_index, int Log_index) { /*²ÎÊı1:ÎïÀíÏÂ±ê ²ÎÊı2:Âß¼­ÏÂ±ê*/
+int Arithtest(int Phy_index, int Log_index) { /*å‚æ•°1:ç‰©ç†ä¸‹æ ‡ å‚æ•°2:é€»è¾‘ä¸‹æ ‡*/
 	int i = Phy_index, p = Log_index;
 
 	switch (Arith[i]) {
-	case '(': {	/*×ó²»ÄÜÓĞÊıÖµ £¬ÓÒ²»ÄÜÓĞÓÒÀ¨ºÅÔËËã·û*/
+	case '(': {	/*å·¦ä¸èƒ½æœ‰æ•°å€¼ ï¼Œå³ä¸èƒ½æœ‰å³æ‹¬å·è¿ç®—ç¬¦*/
 		if (Symbol[p - 1] == 1) return 0;
 		if (Arith[i + 1] == '-') return 1;
 		if (JudgeSymbol(Arith[i + 1], 2) || Arith[i + 1] == ')') return 0;
 		break;
 	}
-	case ')': {	/*×ó²»ÄÜÓĞÔËËã·ûÓë×óÀ¨ºÅ£¬ÓÒ²»ÄÜÓĞÊıÖµ*/
+	case ')': {	/*å·¦ä¸èƒ½æœ‰è¿ç®—ç¬¦ä¸å·¦æ‹¬å·ï¼Œå³ä¸èƒ½æœ‰æ•°å€¼*/
 		if (JudgeSymbol(Symbol[p - 1], 2) && Symbol[p - 1] == '(') return 0;
 		if (JudgeSymbol(Arith[i + 1], 3)) return 0;
 		break;
 	}
 	default: {
-		/*ÔËËã·ûÁ¬Ğø*/
+		/*è¿ç®—ç¬¦è¿ç»­*/
 		if (JudgeSymbol(Arith[i + 1], 2)) return 0;
 
 	}
 	}
 	return 1;
 }
-int ConvertValue(int Phy_index, int Log_index) { /*²ÎÊı1:ÎïÀíÏÂ±ê ²ÎÊı2:Âß¼­ÏÂ±ê*/
+int ConvertValue(int Phy_index, int Log_index) { /*å‚æ•°1:ç‰©ç†ä¸‹æ ‡ å‚æ•°2:é€»è¾‘ä¸‹æ ‡*/
 	int i = Phy_index;
 	int p = Log_index;
 	int n = 0, kp = 0;
@@ -105,7 +115,7 @@ int ConvertValue(int Phy_index, int Log_index) { /*²ÎÊı1:ÎïÀíÏÂ±ê ²ÎÊı2:Âß¼­ÏÂ±ê
 		Stack[n++] = Arith[i];
 	}
 
-	if (kp > 1) return -1; /*Ğ¡ÊıµãÏŞÖÆ*/
+	if (kp > 1) return -1; /*å°æ•°ç‚¹é™åˆ¶*/
 	Value[p] = atof(Stack);
 
 	clear(n);
@@ -118,7 +128,7 @@ void clear(int n) {
 		Stack[i] = 0;
 	}
 }
-int JudgeSymbol(int data, int mode) {	/*1:ÅĞ¶¨×Ö·û 2:ÅĞ¶¨ÔËËã·û 3:ÅĞ¶¨ÊıÖµ*/
+int JudgeSymbol(int data, int mode) {	/*1:åˆ¤å®šå­—ç¬¦ 2:åˆ¤å®šè¿ç®—ç¬¦ 3:åˆ¤å®šæ•°å€¼*/
 	int i;
 	switch (mode) {
 	case 1: {
@@ -146,13 +156,13 @@ int JudgeSymbol(int data, int mode) {	/*1:ÅĞ¶¨×Ö·û 2:ÅĞ¶¨ÔËËã·û 3:ÅĞ¶¨ÊıÖµ*/
 }
 
 int Calculate() {
-	int n = 0, level = 0;		/*n:Âß¼­Êı¾İ×ÜÊı level£ºÓÅÏÈ¼¶*/
+	int n = 0, level = 0;		/*n:é€»è¾‘æ•°æ®æ€»æ•° levelï¼šä¼˜å…ˆçº§*/
 
 	int bracks[10] = { 0 };
 	int brack = 0;
 	int brack_level[10] = { 0 };
 
-	int index = 0, ins = 0;		/*index:¼ÇÂ¼ÏÂ±ê ins:ÈëÕ»Êı¾İÁ¿*/
+	int index = 0, ins = 0;		/*index:è®°å½•ä¸‹æ ‡ ins:å…¥æ ˆæ•°æ®é‡*/
 
 	n = Initialize();
 
@@ -168,13 +178,13 @@ int Calculate() {
 			continue;
 		}
 		if (Symbol[index] == ')') {
-			/*×óÀ¨ºÅ²»´æÔÚ*/
+			/*å·¦æ‹¬å·ä¸å­˜åœ¨*/
 			if (!brack) { printf(" brack error \n"); return 0; }
 
 			brack--;
-			pop(bracks[brack], ins - 1, n);	/*ÊÍ·Åµ±Ç°À¨ºÅÕ»*/
+			pop(bracks[brack], ins - 1, n);	/*é‡Šæ”¾å½“å‰æ‹¬å·æ ˆ*/
 			ins = bracks[brack];
-			brack_level[brack] = 0;		/*ÓÅÏÈ¼¶ÖÃÁã*/
+			brack_level[brack] = 0;		/*ä¼˜å…ˆçº§ç½®é›¶*/
 			continue;
 		}
 		if (brack) {
@@ -189,10 +199,10 @@ int Calculate() {
 	ShowCal();
 	return 1;
 }
-int JudgePrio(int index, int* level, int* ins) {			/*ÅĞ¶ÏÓÅÏÈ¼¶*/
+int JudgePrio(int index, int* level, int* ins) {			/*åˆ¤æ–­ä¼˜å…ˆçº§*/
 	int i = 0;
 	i = JudgeSymbol(Symbol[index], 2);
-	if (*level == 0 || i > * level) {	/*ÅĞ¶¨Â¼Èë*/
+	if (*level == 0 || i > * level) {	/*åˆ¤å®šå½•å…¥*/
 		Stack[*ins] = index;
 		(*ins)++;
 		*level = i;
@@ -200,7 +210,7 @@ int JudgePrio(int index, int* level, int* ins) {			/*ÅĞ¶ÏÓÅÏÈ¼¶*/
 	}
 	return 0;
 }
-int JJud(int index, int* level, int* ins, int n, int bound) {	/*·´¸´ÍËÕ»*/
+int JJud(int index, int* level, int* ins, int n, int bound) {	/*åå¤é€€æ ˆ*/
 
 	while (!JudgePrio(index, level, ins) && *ins > bound) {
 		Cal(Stack[*ins - 1], n);
@@ -217,13 +227,13 @@ int JJud(int index, int* level, int* ins, int n, int bound) {	/*·´¸´ÍËÕ»*/
 	*level = JudgeSymbol(Symbol[index], 2);
 	return 1;
 }
-void pop(int sta, int ins, int n) {	/*³öÕ»*/
-	// printf("\n======pop=======\n"); //È¡Ïûµ÷ÊÔ×¢ÊÍ
+void pop(int sta, int ins, int n) {	/*å‡ºæ ˆ*/
+	// printf("\n======pop=======\n"); //å–æ¶ˆè°ƒè¯•æ³¨é‡Š
 	for (; sta <= ins; ins--) {
 		Cal(Stack[ins], n);
 	}
 }
-void Cal(int index, int n) {	/*ÔËËã*/
+void Cal(int index, int n) {	/*è¿ç®—*/
 	int k = 0;
 	double ros = 0;
 	int lef = index - 1, rig = index + 1;
@@ -232,7 +242,7 @@ void Cal(int index, int n) {	/*ÔËËã*/
 	while (Symbol[rig] != 1 && rig < n - 1) rig++;
 
 	k = JudgeSymbol(Symbol[index], 2) - 1;
-	//printf("k=%d lef=%d rig=%d\n", k, lef, rig); //È¡Ïûµ÷ÊÔ×¢ÊÍ
+	//printf("k=%d lef=%d rig=%d\n", k, lef, rig); //å–æ¶ˆè°ƒè¯•æ³¨é‡Š
 	ros = f[k](Value[lef], Value[rig]);
 
 	Symbol[index] = 1;
@@ -241,13 +251,13 @@ void Cal(int index, int n) {	/*ÔËËã*/
 	Symbol[rig] = 0;
 
 }
-void ShowCal() {			/*Êä³ö½á¹û*/
+void ShowCal() {			/*è¾“å‡ºç»“æœ*/
 	int i;
 	for (i = 0; i < 50; i++) {
 		if (Symbol[i] == 1) printf("=%f", Value[i]);
 	}
 }
-void ShowList(int mode) { /*1£ºÊä³öËãÊ½ 2£ºÊä³öÁÙÊ±×ª»»µÄ×Ö·û´®*/
+void ShowList(int mode) { /*1ï¼šè¾“å‡ºç®—å¼ 2ï¼šè¾“å‡ºä¸´æ—¶è½¬æ¢çš„å­—ç¬¦ä¸²*/
 	int i;
 	switch (mode) {
 	case 1: {
@@ -271,16 +281,16 @@ void ShowList(int mode) { /*1£ºÊä³öËãÊ½ 2£ºÊä³öÁÙÊ±×ª»»µÄ×Ö·û´®*/
 
 }
 double add(double a, double b) {
-	//printf("\n 			a=%f add b=%f \n", a, b);//È¡Ïûµ÷ÊÔ×¢ÊÍ
+	//printf("\n 			a=%f add b=%f \n", a, b);//å–æ¶ˆè°ƒè¯•æ³¨é‡Š
 	return a + b;
 }
 double sub(double a, double b) {
-	//printf("\n 			a=%f sub b=%f \n", a, b)//È¡Ïûµ÷ÊÔ×¢ÊÍ
+	//printf("\n 			a=%f sub b=%f \n", a, b)//å–æ¶ˆè°ƒè¯•æ³¨é‡Š
 	return a - b;
 
 }
 double mul(double a, double b) {
-	//printf("\n 			a=%f mul b=%f \n", a, b);//È¡Ïûµ÷ÊÔ×¢ÊÍ
+	//printf("\n 			a=%f mul b=%f \n", a, b);//å–æ¶ˆè°ƒè¯•æ³¨é‡Š
 	return a * b;
 }
 double _div(double a, double b) {
