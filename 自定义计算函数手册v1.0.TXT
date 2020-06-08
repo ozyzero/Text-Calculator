@@ -1,0 +1,29 @@
+以下若不另行说明，皆是在Caluculate.h文件中操作:
+1.声明计算函数:
+在<计算函数>区域，声明自定义的计算函数.
+
+2.将计算函数名与一个符号绑定:
+在<函数调用>区域，对函数指针数组<double(*funs[])(double, double)>写入自定义函数名。
+注: 注意要与运算符数组<str_symbol[]>下标相对应，程序将使用<预算符数组下标-1>作为下标来调用计算函数。
+
+3.设置运算符优先级:
+在<变量>区域，将自定义的计算符号写入符号数组str_symbol[]适当位置。注: (数组下标越大，优先级越高)
+
+4.实现计算函数:
+在最下方补全自定义函数。
+
+
+
+#示例，假若要加入自定义函数取余:%，有如下步骤。
+1.声明计算函数
+double surplus(double a,double b);
+2.修改函数指针数组为，
+double (*funs[])(double, double) = { add,sub,mul,_div,pow,surplus };
+3.设置优先级
+char str_symbol[10] = { "0+-*/^%()" };
+4.实现计算函数
+double surplus(double a,double b){
+	xxx;
+	xxx;
+	xxx;
+}
